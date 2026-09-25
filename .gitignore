@@ -1,69 +1,101 @@
-# Prerequisites
+# ====================================================================
+# БАЗОВЫЕ И ВРЕМЕННЫЕ ФАЙЛЫ
+# ====================================================================
 *.d
+*.tmp
+*.log
+*.bak
+*.swp
+*.dwo
+Testing/
+.cache/
 
-# Compiled Object files
+# ====================================================================
+# C / C++
+# ====================================================================
+# Промежуточные объекты и заголовки
 *.slo
 *.lo
 *.o
 *.obj
-
-# Precompiled Headers
 *.gch
 *.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-*.so.*
-
-
-# Fortran module files
 *.mod
 *.smod
 
-# Compiled Static libraries
+# Файлы линковщика и отладчика
+*.ilk
+*.pdb
+*.idb
+
+# Динамические и статические библиотеки
+*.so
+*.so.*
+*.dylib
+*.dll
 *.lai
 *.la
 *.a
 *.lib
 
-# Executables
+# Готовые исполняемые файлы (Артефакты сборки)
 *.exe
 *.out
 *.app
 
-# Build directories
+# Папки сборки (Специфика методички и систем сборки)
 build/
 Build/
 build-*/
+Debug/
+Release/
+x64/
+x86/
+out/
 
-# CMake generated files
+# Системы управления пакетами и сборки (CMake, vcpkg)
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
 install_manifest.txt
 compile_commands.json
-
-# Temporary files
-*.tmp
-*.log
-*.bak
-*.swp
-
-# vcpkg
 vcpkg_installed/
 
-# debug information files
-*.dwo
+# ====================================================================
+# СЛУЖЕБНЫЕ ФАЙЛЫ IDE (Visual Studio / VS Code / CLion)
+# ====================================================================
+.vs/
+.vscode/
+.idea/
+*.user
+*.vcxproj.user
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
 
-# test output & cache
-Testing/
-.cache/
+# ====================================================================
+# СПЕЦИФИКА ДЛЯ C# (.NET / Roslyn / MSBuild)
+# ====================================================================
+# Стандартные папки вывода компиляции C#
+[Bb]in/
+[Oo]bj/
+Generated\ Files/
+
+# Кэш и логи сборки .NET
+*.userprefs
+*.usertasks
+*.crecover
+*.log
+*.auto.generated
+_ReSharper*/
+*.[Cc]r[Cc]hoice
+
+# Файлы кэша инструментов восстановления пакетов (NuGet)
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Кэш компилятора Roslyn
+*.ruleset.cache
