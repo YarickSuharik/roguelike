@@ -18,7 +18,7 @@ namespace rl {
         Camera(Position startPos, int width, int height, World* worldContext);
         ~Camera();
 
-        void refreshCamera();
+        void refresh();
         void setCameraLocation(Position newPos);
         void setTrackedActor(Actor* actor);
 

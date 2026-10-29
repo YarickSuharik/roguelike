@@ -1,6 +1,7 @@
 #include "world.hpp"
 #include "actor.hpp"
 #include "camera.hpp"
+#include "player_character.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -9,7 +10,7 @@
 namespace rl {
 
     World::World()
-        : m_tileMap(nullptr), m_mapWidth(0), m_mapHeight(0), m_cameraContext(nullptr) {}
+        : m_tileMap(nullptr), m_mapWidth(0), m_mapHeight(0), m_cameraContext(nullptr), m_playerCharacter(nullptr) {}
 
     World::~World() {
         clearWorldData();
@@ -27,6 +28,7 @@ namespace rl {
         m_mapWidth = 0;
         m_mapHeight = 0;
         m_cameraContext = nullptr;
+        m_playerCharacter = nullptr;
     }
 
     void World::registerCamera(Camera* camera) {
@@ -35,8 +37,7 @@ namespace rl {
 
     void World::notifyCameraRefresh() const {
         if (m_cameraContext != nullptr) {
-            m_cameraContext->refreshCamera();
-            Sleep(300);
+            m_cameraContext->refresh();
         }
     }
 
@@ -159,6 +160,10 @@ namespace rl {
         if (it != m_actors.end()) {
             m_actors.erase(it);
         }
+
+        if (reinterpret_cast<PlayerCharacter*>(actor) == m_playerCharacter) {
+            m_playerCharacter = nullptr;
+        }
     }
 
     Actor* World::getActorAt(Position pos) const {
@@ -182,5 +187,13 @@ namespace rl {
 
     int World::getWidth() const { return m_mapWidth; }
     int World::getHeight() const { return m_mapHeight; }
+
+    void World::setPlayerCharacter(PlayerCharacter* player) {
+        m_playerCharacter = player;
+    }
+
+    PlayerCharacter* World::getPlayerCharacter() const {
+        return m_playerCharacter;
+    }
 
 }

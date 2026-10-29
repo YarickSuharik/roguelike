@@ -8,16 +8,17 @@ namespace rl {
 
     class Actor;
     class Camera;
+    class PlayerCharacter;
 
     class World {
     private:
         std::vector<Actor*> m_actors;
-
         std::string** m_tileMap;
         int m_mapWidth;
         int m_mapHeight;
-
         Camera* m_cameraContext;
+
+        PlayerCharacter* m_playerCharacter;
 
         void clearWorldData();
         Actor* getActorAt(Position pos) const;
@@ -39,6 +40,9 @@ namespace rl {
         int getWidth() const;
         int getHeight() const;
         std::string getTileAt(Position pos) const;
+
+        void setPlayerCharacter(PlayerCharacter* player);
+        PlayerCharacter* getPlayerCharacter() const;
     };
 
 }

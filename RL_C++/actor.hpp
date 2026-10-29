@@ -10,9 +10,9 @@ namespace rl {
     private:
         Position m_position;
         std::string m_actorName;
-        World* m_worldContext;
         std::string m_symbol;
-
+    protected:
+        World* m_worldContext;
     public:
         Actor(std::string name, Position startPos, World* worldContext, std::string symbol);
         virtual ~Actor();

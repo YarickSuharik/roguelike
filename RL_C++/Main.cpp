@@ -1,10 +1,11 @@
 #include <Windows.h>
 #include "world.hpp"
 #include "actor.hpp"
+#include "player_character.hpp"
+#include "controller.hpp"
 #include "camera.hpp"
 #include "position.hpp"
 #include <iostream>
-#include <conio.h>
 
 int main() {
     SetConsoleOutputCP(65001);
@@ -17,26 +18,23 @@ int main() {
         return 1;
     }
 
-    rl::Actor* player = new rl::Actor("Hero", rl::Position(5, 4), &gameWorld, "@");
+    // Создаем персонажа игрока и статический объект окружения
+    rl::PlayerCharacter* player = new rl::PlayerCharacter("Hero", rl::Position(5, 4), &gameWorld, "@");
     rl::Actor* chest = new rl::Actor("Chest", rl::Position(15, 2), &gameWorld, "C");
+
+    gameWorld.setPlayerCharacter(player);
 
     rl::Camera gameCamera(rl::Position(0, 0), 41, 31, &gameWorld);
     gameCamera.setTrackedActor(player);
-
     gameWorld.registerCamera(&gameCamera);
+    gameCamera.refresh();
 
-    gameCamera.refreshCamera();
-    _getch();
-
-    chest->setActorLocation(rl::Position(-5, -5));
-
-    chest->setActorLocation(rl::Position(0, 1));
-
-    chest->setActorLocation(rl::Position(10, 2));
-
-    player->setActorLocation(rl::Position(15, 4));
-
-    _getch();
+    while (true) {
+        rl::Controller* playerController = player->getController();
+        if (playerController != nullptr) {
+            playerController->update();
+        }
+    }
 
     delete chest;
     delete player;

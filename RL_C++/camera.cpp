@@ -12,7 +12,7 @@ namespace rl {
 
     Camera::~Camera() {}
 
-    void Camera::refreshCamera() {
+    void Camera::refresh() {
         if (m_worldContext == nullptr) {
             return;
         }
