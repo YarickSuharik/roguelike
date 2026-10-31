@@ -8,7 +8,7 @@ namespace rl {
     class Controller;
 
     class Character : public Actor {
-    protected:
+    private:
         Controller* m_controller;
 
     public:
