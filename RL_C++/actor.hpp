@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "position.hpp"
+#include <memory>
 #include <string>
 
 namespace rl {
@@ -12,18 +13,19 @@ namespace rl {
         std::string m_actorName;
         std::string m_symbol;
     protected:
-        World* m_worldContext;
+        std::weak_ptr<World> m_worldContext;
     public:
-        Actor(std::string name, Position startPos, World* worldContext, std::string symbol);
+        Actor(std::string name, Position startPos, const std::weak_ptr<World>& worldContext, std::string symbol);
         virtual ~Actor();
 
+        virtual void onSpawned();
         virtual bool onCollisionEvent();
 
         bool setActorLocation(Position newPos);
 
         Position getActorLocation() const;
         std::string getActorName() const;
-        World* getWorldContext() const;
+        std::weak_ptr<World> getWorldContext() const;
         std::string getSymbol() const;
     };
 
