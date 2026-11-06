@@ -1,48 +1,43 @@
-#include "actor.hpp"
+﻿#include "actor.hpp"
 #include "world.hpp"
-#include "cell_content.hpp"
 #include <iostream>
+#include <utility>
 
 namespace rl {
 
-    Actor::Actor(std::string name, Position startPos, World* worldContext, std::string symbol)
-        : m_actorName(name), m_position(startPos), m_worldContext(worldContext), m_symbol(symbol) {
-        if (m_worldContext != nullptr) {
-            m_worldContext->registerActor(this);
-        }
-    }
+    Actor::Actor(std::string name, Position startPos, const std::weak_ptr<World>& worldContext, std::string symbol)
+        : m_position(startPos), m_actorName(std::move(name)), m_symbol(std::move(symbol)), m_worldContext(worldContext) {}
 
     Actor::~Actor() {
-        if (m_worldContext != nullptr) {
-            m_worldContext->unregisterActor(this);
-        }
         std::cout << "[Actor] Destructor: " << m_actorName << " destroyed.\n";
     }
+
+    void Actor::onSpawned() {}
 
     bool Actor::onCollisionEvent() {
         return true;
     }
 
     bool Actor::setActorLocation(Position newPos) {
-        if (m_worldContext == nullptr) {
+        auto world = m_worldContext.lock();
+
+        if (!world) {
             return false;
         }
 
-        bool pathIsClear = m_worldContext->canMoveTo(this, newPos);
-
-        if (!pathIsClear) {
+        if (!world->canMoveTo(this, newPos)) {
             return false;
         }
 
         m_position = newPos;
-        m_worldContext->notifyCameraRefresh();
+        world->notifyCameraRefresh();
 
         return true;
     }
 
     Position Actor::getActorLocation() const { return m_position; }
     std::string Actor::getActorName() const { return m_actorName; }
-    World* Actor::getWorldContext() const { return m_worldContext; }
+    std::weak_ptr<World> Actor::getWorldContext() const { return m_worldContext; }
     std::string Actor::getSymbol() const { return m_symbol; }
 
 }

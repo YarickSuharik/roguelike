@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "position.hpp"
+#include <memory>
 
 namespace rl {
 
@@ -11,22 +12,22 @@ namespace rl {
         Position m_position;
         int m_width;
         int m_height;
-        World* m_worldContext;
-        Actor* m_trackedActor;
+        std::weak_ptr<World> m_worldContext;
+        std::weak_ptr<Actor> m_trackedActor;
 
     public:
-        Camera(Position startPos, int width, int height, World* worldContext);
+        Camera(Position startPos, int width, int height, const std::weak_ptr<World>& worldContext);
         ~Camera();
 
         void refresh();
         void setCameraLocation(Position newPos);
-        void setTrackedActor(Actor* actor);
+        void setTrackedActor(const std::weak_ptr<Actor>& actor);
 
         Position getCameraLocation() const;
         int getWidth() const;
         int getHeight() const;
-        World* getWorldContext() const;
-        Actor* getTrackedActor() const;
+        std::weak_ptr<World> getWorldContext() const;
+        std::weak_ptr<Actor> getTrackedActor() const;
     };
 
 }

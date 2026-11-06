@@ -1,4 +1,5 @@
-#pragma once
+﻿#pragma once
+#include <memory>
 
 namespace rl {
 
@@ -6,16 +7,16 @@ namespace rl {
 
     class Controller {
     protected:
-        Character* m_possessedCharacter;
+        std::weak_ptr<Character> m_possessedCharacter;
 
     public:
         Controller();
         virtual ~Controller();
 
-        virtual void possess(Character* character);
+        virtual void possess(const std::weak_ptr<Character>& character);
         virtual void update() = 0;
 
-        Character* getPossessedCharacter() const;
+        std::weak_ptr<Character> getPossessedCharacter() const;
     };
 
 }
