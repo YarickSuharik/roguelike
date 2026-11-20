@@ -44,4 +44,8 @@ namespace rl {
         }
     }
 
+    std::unique_ptr<BaseController> PlayerController::clone() const {
+        return std::make_unique<PlayerController>();
+    }
+
 }

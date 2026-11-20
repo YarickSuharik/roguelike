@@ -16,6 +16,10 @@ namespace rl {
 
     public:
         Character(std::string name, Position startPos, const std::weak_ptr<World>& worldContext, std::string symbol);
+        Character(const Character& other);
+        Character(Character&& other) noexcept;
+        Character& operator=(const Character& other);
+        Character& operator=(Character&& other) noexcept;
         virtual ~Character();
 
         void setController(std::unique_ptr<BaseController> controller);
@@ -25,6 +29,8 @@ namespace rl {
         int getAvailableSteps() const;
 
         bool moveRelative(int dx, int dy);
+
+        virtual std::unique_ptr<Character> clone() const;
     };
 
 }

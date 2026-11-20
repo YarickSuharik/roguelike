@@ -45,4 +45,8 @@ namespace rl {
         }
     }
 
+    std::unique_ptr<BaseController> AIController::clone() const {
+        return std::make_unique<AIController>();
+    }
+
 }

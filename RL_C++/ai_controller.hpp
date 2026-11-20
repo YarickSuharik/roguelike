@@ -9,6 +9,7 @@ namespace rl {
         virtual ~AIController();
 
         virtual void makeStep() override;
+        virtual std::unique_ptr<BaseController> clone() const override;
     };
 
 }

@@ -17,6 +17,7 @@ namespace rl {
 
         void update();
         virtual void makeStep() = 0;
+        virtual std::unique_ptr<BaseController> clone() const = 0;
 
         std::weak_ptr<Character> getPossessedCharacter() const;
     };

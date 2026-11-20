@@ -2,6 +2,7 @@
 #include <conio.h>
 #include <memory>
 #include <iostream>
+#include <utility>
 #include "world.hpp"
 #include "actor.hpp"
 #include "character.hpp"
@@ -33,6 +34,55 @@ namespace {
         }
     }
 
+    void demoCopyAndClone(const std::shared_ptr<rl::World>& world) {
+        std::cout << "\n=== shallow copy: loot stays shared ===\n";
+        {
+            rl::Skeleton original("Original", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S", "gold");
+            rl::Skeleton shallow(original);
+            shallow.addLoot("bone");
+
+            std::cout << "original loot: " << original.getLoot() << "\n";
+            std::cout << "shallow loot: " << shallow.getLoot() << "\n";
+        }
+
+        std::cout << "\n=== deep clone: loot is separated ===\n";
+        {
+            rl::Skeleton original("Original", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S", "gold");
+            std::unique_ptr<rl::Character> clone = original.clone();
+            auto cloneSkeleton = dynamic_cast<rl::Skeleton*>(clone.get());
+
+            if (cloneSkeleton != nullptr) {
+                cloneSkeleton->addLoot("bone");
+            }
+
+            std::cout << "original loot: " << original.getLoot() << "\n";
+            std::cout << "clone loot: " << (cloneSkeleton != nullptr ? cloneSkeleton->getLoot() : std::string()) << "\n";
+        }
+
+        std::cout << "\n=== move constructor ===\n";
+        {
+            rl::Skeleton source("Source", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S", "gold");
+            rl::Skeleton moved(std::move(source));
+
+            std::cout << "moved loot: " << moved.getLoot() << "\n";
+            std::cout << "source loot after move: [" << source.getLoot() << "]\n";
+        }
+
+        std::cout << "\n=== copy of a character that has a controller ===\n";
+        {
+            auto spawned = world->spawnActor<rl::Skeleton>("Guarded", rl::Position(2, 2), "S");
+            auto guarded = spawned.lock();
+
+            rl::Skeleton copy(*guarded);
+
+            std::cout << "source controller: " << (guarded->getController() != nullptr ? "yes" : "no") << "\n";
+            std::cout << "copy controller: " << (copy.getController() != nullptr ? "yes" : "no")
+                      << ", possessed: " << (!copy.getController()->getPossessedCharacter().expired() ? "yes" : "no") << "\n";
+
+            world->destroyActor(guarded.get());
+        }
+    }
+
 }
 
 int main() {
@@ -47,6 +97,11 @@ int main() {
     }
 
     demoConstructors();
+
+    std::cout << "\nPress any key to see copying.\n";
+    _getch();
+
+    demoCopyAndClone(gameWorld);
 
     std::cout << "\nPress any key to start.\n";
     _getch();

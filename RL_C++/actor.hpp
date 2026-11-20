@@ -16,6 +16,10 @@ namespace rl {
         std::weak_ptr<World> m_worldContext;
     public:
         Actor(std::string name, Position startPos, const std::weak_ptr<World>& worldContext, std::string symbol);
+        Actor(const Actor& other);
+        Actor(Actor&& other) noexcept;
+        Actor& operator=(const Actor& other);
+        Actor& operator=(Actor&& other) noexcept;
         virtual ~Actor();
 
         virtual void onSpawned();
