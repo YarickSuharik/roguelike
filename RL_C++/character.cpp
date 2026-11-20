@@ -1,5 +1,5 @@
 ﻿#include "character.hpp"
-#include "controller.hpp"
+#include "base_controller.hpp"
 #include "world.hpp"
 #include <utility>
 
@@ -11,7 +11,7 @@ namespace rl {
     Character::~Character() {}
 
     // вызывать после того, как объект создан через spawnActor: shared_from_this() требует живого владельца
-    void Character::setController(std::unique_ptr<Controller> controller) {
+    void Character::setController(std::unique_ptr<BaseController> controller) {
         m_controller = std::move(controller);
 
         if (m_controller) {
@@ -19,7 +19,7 @@ namespace rl {
         }
     }
 
-    Controller* Character::getController() const {
+    BaseController* Character::getController() const {
         return m_controller.get();
     }
 
@@ -31,8 +31,7 @@ namespace rl {
         Position currentPos = getActorLocation();
         Position targetPos(currentPos.x + dx, currentPos.y + dy);
 
-        setActorLocation(targetPos);
-        return true;
+        return setActorLocation(targetPos);
     }
 
 }

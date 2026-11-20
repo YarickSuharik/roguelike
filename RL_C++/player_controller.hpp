@@ -1,14 +1,14 @@
-#pragma once
-#include "controller.hpp"
+﻿#pragma once
+#include "base_controller.hpp"
 
 namespace rl {
 
-    class PlayerController : public Controller {
+    class PlayerController : public BaseController {
     public:
         PlayerController();
         virtual ~PlayerController();
 
-        virtual void update() override;
+        virtual void makeStep() override;
     };
 
 }

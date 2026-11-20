@@ -5,16 +5,24 @@ namespace rl {
 
     class Character;
 
-    class Controller {
+    class BaseController {
+    private:
+        int m_availableSteps;
+
     protected:
         std::weak_ptr<Character> m_possessedCharacter;
 
     public:
-        Controller();
-        virtual ~Controller();
+        BaseController();
+        virtual ~BaseController();
 
         virtual void possess(const std::weak_ptr<Character>& character);
-        virtual void update() = 0;
+
+        void update();
+        virtual void makeStep() = 0;
+
+        void setAvailableSteps(int steps);
+        int getAvailableSteps() const;
 
         std::weak_ptr<Character> getPossessedCharacter() const;
     };
