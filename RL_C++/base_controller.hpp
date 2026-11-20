@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <memory>
+#include <string>
 
 namespace rl {
 
@@ -18,6 +19,7 @@ namespace rl {
         void update();
         virtual void makeStep() = 0;
         virtual std::unique_ptr<BaseController> clone() const = 0;
+        virtual std::string describe() const;
 
         std::weak_ptr<Character> getPossessedCharacter() const;
     };

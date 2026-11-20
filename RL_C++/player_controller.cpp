@@ -48,4 +48,8 @@ namespace rl {
         return std::make_unique<PlayerController>();
     }
 
+    std::string PlayerController::describe() const {
+        return BaseController::describe() + " -> keyboard input";
+    }
+
 }

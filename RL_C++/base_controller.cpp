@@ -28,6 +28,16 @@ namespace rl {
         }
     }
 
+    std::string BaseController::describe() const {
+        auto character = m_possessedCharacter.lock();
+
+        if (!character) {
+            return "BaseController idle";
+        }
+
+        return "BaseController on " + character->getActorName();
+    }
+
     std::weak_ptr<Character> BaseController::getPossessedCharacter() const {
         return m_possessedCharacter;
     }

@@ -1,5 +1,6 @@
 ﻿#include <Windows.h>
 #include <conio.h>
+#include <cstdlib>
 #include <memory>
 #include <iostream>
 #include <utility>
@@ -83,6 +84,25 @@ namespace {
         }
     }
 
+    void demoOverrides(const std::shared_ptr<rl::World>& world) {
+        std::cout << "\n=== describe() through base pointer ===\n";
+
+        auto playerSpawned = world->spawnActor<rl::PlayerCharacter>("DemoHero", rl::Position(2, 2), "@");
+        auto skeletonSpawned = world->spawnActor<rl::Skeleton>("DemoSkeleton", rl::Position(3, 3), "S");
+
+        auto hero = playerSpawned.lock();
+        auto skeleton = skeletonSpawned.lock();
+
+        rl::BaseController* playerController = hero->getController();
+        rl::BaseController* skeletonController = skeleton->getController();
+
+        std::cout << "player: " << playerController->describe() << "\n";
+        std::cout << "skeleton: " << skeletonController->describe() << "\n";
+
+        world->destroyActor(hero.get());
+        world->destroyActor(skeleton.get());
+    }
+
 }
 
 int main() {
@@ -96,12 +116,20 @@ int main() {
         return 1;
     }
 
+    system("cls");
     demoConstructors();
 
     std::cout << "\nPress any key to see copying.\n";
     _getch();
 
+    system("cls");
     demoCopyAndClone(gameWorld);
+
+    std::cout << "\nPress any key to see overrides.\n";
+    _getch();
+
+    system("cls");
+    demoOverrides(gameWorld);
 
     std::cout << "\nPress any key to start.\n";
     _getch();

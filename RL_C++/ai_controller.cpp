@@ -49,4 +49,8 @@ namespace rl {
         return std::make_unique<AIController>();
     }
 
+    std::string AIController::describe() const {
+        return "AIController -> random adjacent step";
+    }
+
 }
