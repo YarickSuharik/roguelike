@@ -1,119 +1,114 @@
-#include <Windows.h>
+пїњ#include <Windows.h>
 #include <conio.h>
 #include <iostream>
+#include <memory>
 #include "world.hpp"
 #include "actor.hpp"
 #include "player_character.hpp"
-#include "controller.hpp"
 #include "player_controller.hpp"
 #include "camera.hpp"
 #include "position.hpp"
 
-// тестовые функиции дл€ работы со ссылувми и указател€ми
+namespace {
 
-void demoByReference(rl::Actor& actor) {
-    std::cout << "[ref] " << actor.getActorName() << " at ("
-        << actor.getActorLocation().x << "," << actor.getActorLocation().y << ")\n";
-    actor.setActorLocation(rl::Position(actor.getActorLocation().x + 1, actor.getActorLocation().y));
+    void demoUniquePtr() {
+        std::cout << "\n=== unique_ptr ===\n";
+
+        {
+            auto controller = std::make_unique<rl::PlayerController>();
+            auto movedController = std::move(controller);
+
+            std::cout << "[unique] ownership moved, source pointer empty: " << (controller == nullptr) << "\n";
+        }
+
+        std::cout << "[unique] block left, object destroyed without delete\n";
+
+        {
+            auto controllers = std::make_unique<rl::PlayerController[]>(3);
+            std::cout << "[unique] array of three created without new[]\n";
+        }
+
+        std::cout << "[unique] array destroyed without delete[]\n";
+    }
+
+    void demoSharedPtr(const std::shared_ptr<rl::World>& world) {
+        std::cout << "\n=== shared_ptr ===\n";
+
+        std::weak_ptr<rl::Actor> ghost = world->spawnActor<rl::Actor>("SharedGhost", rl::Position(2, 2), "G");
+        std::cout << "[shared] owners after spawn: " << ghost.use_count() << "\n";
+
+        {
+            auto keeper = ghost.lock();
+            std::cout << "[shared] owners after lock(): " << keeper.use_count() << "\n";
+
+            auto copy = keeper;
+            std::cout << "[shared] owners after copy: " << copy.use_count() << "\n";
+        }
+
+        std::cout << "[shared] owners after copies destroyed: " << ghost.use_count() << "\n";
+
+        {
+            auto locked = ghost.lock();
+            world->destroyActor(locked.get());
+        }
+
+        std::cout << "[shared] world released the last owner, expired: " << ghost.expired() << "\n";
+    }
+
+    void demoWeakPtr(const std::shared_ptr<rl::World>& world) {
+        std::cout << "\n=== weak_ptr ===\n";
+
+        std::weak_ptr<rl::Actor> ghost = world->spawnActor<rl::Actor>("WeakGhost", rl::Position(3, 2), "W");
+
+        if (auto alive = ghost.lock()) {
+            std::cout << "[weak] lock() works while object is alive: " << alive->getActorName() << "\n";
+            world->destroyActor(alive.get());
+        }
+
+        std::cout << "[weak] lock() returns empty after death: " << (ghost.lock() == nullptr) << "\n";
+        std::cout << "[weak] expired(): " << ghost.expired() << "\n";
+    }
+
 }
-
-void demoByPointer(rl::Actor* actor) {
-    if (actor == nullptr) return;
-    std::cout << "[ptr] " << actor->getActorName() << " at ("
-        << actor->getActorLocation().x << "," << actor->getActorLocation().y << ")\n";
-    actor->setActorLocation(rl::Position(actor->getActorLocation().x - 1, actor->getActorLocation().y));
-}
-
-// конец
 
 int main() {
     SetConsoleOutputCP(65001);
+    std::cout << std::boolalpha;
 
-    rl::World gameWorld;
+    auto gameWorld = std::make_shared<rl::World>();
 
-    if (!gameWorld.initializeMap("start_room.txt")) {
+    if (!gameWorld->initializeMap("start_room.txt")) {
         std::cout << "Failed to load map data.\n";
         std::cin.get();
         return 1;
     }
 
-    // —оздаем персонажа игрока и статический объект окружени€
-    rl::PlayerCharacter* player = new rl::PlayerCharacter("Hero", rl::Position(5, 4), &gameWorld, "@");
-    rl::Actor* chest = new rl::Actor("Chest", rl::Position(15, 2), &gameWorld, "C");
+    demoUniquePtr();
+    demoSharedPtr(gameWorld);
+    demoWeakPtr(gameWorld);
 
-    // тестовый персонаж и тд
-    rl::Character* secondPlayer = new rl::Character("SecondHero", rl::Position(4, 4), &gameWorld, "S");
-    secondPlayer->setController(new rl::PlayerController());
-    rl::Actor* refActor;
-    rl::Controller* controllerArray;
-    rl::Actor** actorArray;
+    std::cout << "\nPress any key to start the game.\n";
+    _getch();
 
-    gameWorld.setPlayerCharacter(player);
+    std::weak_ptr<rl::PlayerCharacter> player =
+        gameWorld->spawnActor<rl::PlayerCharacter>("Hero", rl::Position(5, 4), "@");
+    gameWorld->setPlayerCharacter(player);
 
-    rl::Camera gameCamera(rl::Position(0, 0), 41, 31, &gameWorld);
-    gameCamera.setTrackedActor(player);
-    gameWorld.registerCamera(&gameCamera);
-    gameCamera.refresh();
-
-    int stepCount = 0;
+    auto gameCamera = std::make_shared<rl::Camera>(rl::Position(0, 0), 41, 31, gameWorld);
+    gameCamera->setTrackedActor(player);
+    gameWorld->registerCamera(gameCamera);
+    gameCamera->refresh();
 
     while (true) {
-        rl::Controller* playerController = player->getController();
-        if (playerController != nullptr) {
-            playerController->update();
+        auto hero = player.lock();
 
-            stepCount++;
-
-            switch (stepCount) {
-            case 1: // удаление части (агрегаци€)
-                secondPlayer->setController(nullptr);
-                break;
-            case 2: // возвращение
-                secondPlayer->setController(new rl::PlayerController());
-                break;
-            case 3: // удаление целого (композици€)
-                delete secondPlayer;
-                secondPlayer = nullptr;
-                break;
-            case 4: // статик
-            {
-                static rl::Actor staticActor("StaticGhost", rl::Position(20, 4), &gameWorld, "S");
-                gameCamera.refresh();
-            }
-                break;
-            case 5: // ссылки и указатели
-                refActor = new rl::Actor("RefGhost", rl::Position(15, 4), &gameWorld, "R");
-                demoByReference(*refActor);   // по ссылке Ч сдвиг вправо (31,4)
-                gameCamera.refresh(); 
-                _getch();
-                demoByPointer(refActor);      // по указателю Ч сдвиг влево (30,4)
-                gameCamera.refresh(); 
-                _getch();
-                delete refActor;
-                break;
-            case 6: // динамический массив
-                controllerArray = new rl::PlayerController[3];
-                delete[] controllerArray;
-                controllerArray = nullptr;
-                break;
-            case 7: // динамические объекты
-                actorArray = new rl::Actor* [3];
-                actorArray[0] = new rl::Actor("GhostA", rl::Position(13, 4), &gameWorld, "A");
-                actorArray[1] = new rl::Actor("GhostB", rl::Position(14, 4), &gameWorld, "B");
-                actorArray[2] = new rl::Actor("GhostC", rl::Position(16, 4), &gameWorld, "D");
-                gameCamera.refresh(); 
-                _getch();
-                for (int i = 0; i < 3; ++i) { delete actorArray[i]; }
-                delete[] actorArray;
-                break;
-            }
+        if (!hero) {
+            break;
         }
-    }
 
-    delete chest;
-    delete secondPlayer;
-    if (player != nullptr) {
-        delete player;
+        if (auto controller = hero->getController()) {
+            controller->update();
+        }
     }
 
     return 0;

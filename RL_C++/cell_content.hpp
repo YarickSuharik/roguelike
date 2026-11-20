@@ -1,4 +1,5 @@
-#pragma once
+﻿#pragma once
+#include <memory>
 
 namespace rl {
 
@@ -6,10 +7,10 @@ namespace rl {
 
     struct CellContent {
         bool isWall;
-        Actor* actorPtr;
+        std::weak_ptr<Actor> actorPtr;
 
-        CellContent() : isWall(false), actorPtr(nullptr) {}
-        CellContent(bool wall, Actor* actor) : isWall(wall), actorPtr(actor) {}
+        CellContent() : isWall(false) {}
+        CellContent(bool wall, const std::weak_ptr<Actor>& actor) : isWall(wall), actorPtr(actor) {}
     };
 
 }
