@@ -99,3 +99,6 @@ artifacts/
 
 # Кэш компилятора Roslyn
 *.ruleset.cache
+
+# C# publish output
+publish/
