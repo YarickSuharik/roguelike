@@ -2,6 +2,7 @@
 #include "character.hpp"
 #include <algorithm>
 #include <array>
+#include <iostream>
 #include <random>
 
 namespace rl {
@@ -17,9 +18,13 @@ namespace rl {
         }
     }
 
-    AIController::AIController() : BaseController() {}
+    AIController::AIController() : BaseController() {
+        std::cout << "[AIController] Constructor\n";
+    }
 
-    AIController::~AIController() {}
+    AIController::~AIController() {
+        std::cout << "[AIController] Destructor\n";
+    }
 
     void AIController::makeStep() {
         auto character = m_possessedCharacter.lock();

@@ -4,26 +4,28 @@
 
 namespace rl {
 
-    BaseController::BaseController() : m_availableSteps(1) {}
+    BaseController::BaseController() {
+        std::cout << "[BaseController] Constructor\n";
+    }
 
-    BaseController::~BaseController() { std::cout << "[BaseController] Destructor\n"; }
+    BaseController::~BaseController() {
+        std::cout << "[BaseController] Destructor\n";
+    }
 
     void BaseController::possess(const std::weak_ptr<Character>& character) {
         m_possessedCharacter = character;
     }
 
     void BaseController::update() {
-        for (int i = 0; i < m_availableSteps; ++i) {
+        auto character = m_possessedCharacter.lock();
+
+        if (!character) return;
+
+        int steps = character->getAvailableSteps();
+
+        for (int i = 0; i < steps; ++i) {
             makeStep();
         }
-    }
-
-    void BaseController::setAvailableSteps(int steps) {
-        m_availableSteps = steps > 0 ? steps : 0;
-    }
-
-    int BaseController::getAvailableSteps() const {
-        return m_availableSteps;
     }
 
     std::weak_ptr<Character> BaseController::getPossessedCharacter() const {

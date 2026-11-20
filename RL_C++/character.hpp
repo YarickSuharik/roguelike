@@ -12,6 +12,7 @@ namespace rl {
     class Character : public Actor, public std::enable_shared_from_this<Character> {
     private:
         std::unique_ptr<BaseController> m_controller;
+        int m_availableSteps;
 
     public:
         Character(std::string name, Position startPos, const std::weak_ptr<World>& worldContext, std::string symbol);
@@ -19,6 +20,9 @@ namespace rl {
 
         void setController(std::unique_ptr<BaseController> controller);
         BaseController* getController() const;
+
+        void setAvailableSteps(int steps);
+        int getAvailableSteps() const;
 
         bool moveRelative(int dx, int dy);
     };

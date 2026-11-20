@@ -2,12 +2,17 @@
 #include "character.hpp"
 #include "position.hpp"
 #include <conio.h>
+#include <iostream>
 
 namespace rl {
 
-    PlayerController::PlayerController() : BaseController() {}
+    PlayerController::PlayerController() : BaseController() {
+        std::cout << "[PlayerController] Constructor\n";
+    }
 
-    PlayerController::~PlayerController() {}
+    PlayerController::~PlayerController() {
+        std::cout << "[PlayerController] Destructor\n";
+    }
 
     void PlayerController::makeStep() {
         auto character = m_possessedCharacter.lock();

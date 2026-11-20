@@ -6,9 +6,6 @@ namespace rl {
     class Character;
 
     class BaseController {
-    private:
-        int m_availableSteps;
-
     protected:
         std::weak_ptr<Character> m_possessedCharacter;
 
@@ -20,9 +17,6 @@ namespace rl {
 
         void update();
         virtual void makeStep() = 0;
-
-        void setAvailableSteps(int steps);
-        int getAvailableSteps() const;
 
         std::weak_ptr<Character> getPossessedCharacter() const;
     };

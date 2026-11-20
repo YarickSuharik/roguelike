@@ -6,10 +6,12 @@
 namespace rl {
 
     Actor::Actor(std::string name, Position startPos, const std::weak_ptr<World>& worldContext, std::string symbol)
-        : m_position(startPos), m_actorName(std::move(name)), m_symbol(std::move(symbol)), m_worldContext(worldContext) {}
+        : m_position(startPos), m_actorName(std::move(name)), m_symbol(std::move(symbol)), m_worldContext(worldContext) {
+        std::cout << "[Actor] Constructor: " << m_actorName << "\n";
+    }
 
     Actor::~Actor() {
-        std::cout << "[Actor] Destructor: " << m_actorName << " destroyed.\n";
+        std::cout << "[Actor] Destructor: " << m_actorName << "\n";
     }
 
     void Actor::onSpawned() {}

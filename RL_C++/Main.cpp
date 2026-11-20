@@ -1,4 +1,5 @@
 ﻿#include <Windows.h>
+#include <conio.h>
 #include <memory>
 #include <iostream>
 #include "world.hpp"
@@ -7,8 +8,32 @@
 #include "player_character.hpp"
 #include "base_controller.hpp"
 #include "ai_controller.hpp"
+#include "skeleton.hpp"
 #include "camera.hpp"
 #include "position.hpp"
+
+namespace {
+
+    void demoConstructors() {
+        std::cout << "\n=== constructor with parameters ===\n";
+        {
+            rl::Skeleton skeleton("DemoSkeleton", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S");
+        }
+
+        std::cout << "\n=== default constructor ===\n";
+        {
+            rl::Skeleton defaultSkeleton;
+        }
+
+        std::cout << "\n=== destruction through base pointer ===\n";
+        {
+            std::unique_ptr<rl::BaseController> controller = std::make_unique<rl::AIController>();
+            std::unique_ptr<rl::Character> basePointer = std::make_unique<rl::Skeleton>();
+            std::cout << "--- leaving scope ---\n";
+        }
+    }
+
+}
 
 int main() {
     SetConsoleOutputCP(65001);
@@ -21,18 +46,19 @@ int main() {
         return 1;
     }
 
+    demoConstructors();
+
+    std::cout << "\nPress any key to start.\n";
+    _getch();
+
     std::weak_ptr<rl::PlayerCharacter> player =
         gameWorld->spawnActor<rl::PlayerCharacter>("Hero", rl::Position(5, 4), "@");
     gameWorld->setPlayerCharacter(player);
 
     gameWorld->spawnActor<rl::Actor>("Chest", rl::Position(15, 2), "C");
 
-    std::weak_ptr<rl::Character> slime =
-        gameWorld->spawnActor<rl::Character>("Slime", rl::Position(18, 4), "E");
-
-    if (auto slimeCharacter = slime.lock()) {
-        slimeCharacter->setController(std::make_unique<rl::AIController>());
-    }
+    std::weak_ptr<rl::Skeleton> skeleton =
+        gameWorld->spawnActor<rl::Skeleton>("Skeleton", rl::Position(18, 4), "S");
 
     auto gameCamera = std::make_shared<rl::Camera>(rl::Position(0, 0), 41, 31, gameWorld);
     gameCamera->setTrackedActor(player);
@@ -50,8 +76,8 @@ int main() {
             controller->update();
         }
 
-        if (auto slimeCharacter = slime.lock()) {
-            if (auto controller = slimeCharacter->getController()) {
+        if (auto skeletonCharacter = skeleton.lock()) {
+            if (auto controller = skeletonCharacter->getController()) {
                 controller->update();
             }
         }
