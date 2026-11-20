@@ -2,18 +2,19 @@ namespace RL;
 
 public class Actor
 {
-    public string Name { get; }
-    public char Symbol { get; }
-    public Position Location { get; private set; }
-    protected World? WorldContext { get; }
-
     public Actor(string name, Position startPosition, World? worldContext, char symbol)
     {
         Name = name;
         Symbol = symbol;
         Location = startPosition;
         WorldContext = worldContext;
+        Console.WriteLine($"[Actor] Constructor: {Name}");
     }
+
+    public string Name { get; }
+    public char Symbol { get; }
+    public Position Location { get; private set; }
+    protected World? WorldContext { get; }
 
     // в C# нет детерминированного деструктора: это финализатор, его вызывает сборщик мусора
     ~Actor()
