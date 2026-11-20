@@ -22,7 +22,12 @@ namespace rl {
         virtual void onSpawned() override;
 
         std::string getLoot() const;
+        std::string getFirstLoot() const;
+        bool hasLoot(const std::string& item) const;
+        bool lootEquals(const std::string& expected) const;
         void addLoot(const std::string& item);
+        void takeLootFrom(const Skeleton& source);
+        void shareLootWith(Skeleton& other) const;
 
         virtual std::unique_ptr<Character> clone() const override;
     };

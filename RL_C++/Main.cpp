@@ -103,6 +103,38 @@ namespace {
         world->destroyActor(skeleton.get());
     }
 
+    void demoStringsAndThis() {
+        std::cout << "\n=== loot as std::string ===\n";
+        {
+            rl::Skeleton collector("Collector", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S", "gold");
+            collector.addLoot("bone");
+
+            std::cout << "loot: " << collector.getLoot() << "\n";
+            std::cout << "find(\"bon\"): " << (collector.hasLoot("bon") ? "yes" : "no") << "\n";
+            std::cout << "find(\"sword\"): " << (collector.hasLoot("sword") ? "yes" : "no") << "\n";
+            std::cout << "first item: " << collector.getFirstLoot() << "\n";
+            std::cout << "equals \"gold bone\": " << (collector.lootEquals("gold bone") ? "yes" : "no") << "\n";
+        }
+
+        std::cout << "\n=== this ===\n";
+        {
+            rl::Skeleton giver("Giver", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S", "gem");
+            rl::Skeleton keeper("Keeper", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S", "coin");
+
+            giver.shareLootWith(keeper);
+            std::cout << "keeper loot after sharing: " << keeper.getLoot() << "\n";
+
+            giver = giver;
+            std::cout << "giver loot after self assignment: " << giver.getLoot() << "\n";
+
+            rl::Skeleton first("First", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S", "a");
+            rl::Skeleton second("Second", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S", "b");
+
+            first = second = giver;
+            std::cout << "chained assignment: first=" << first.getLoot() << ", second=" << second.getLoot() << "\n";
+        }
+    }
+
 }
 
 int main() {
@@ -130,6 +162,12 @@ int main() {
 
     system("cls");
     demoOverrides(gameWorld);
+
+    std::cout << "\nPress any key to see strings and this.\n";
+    _getch();
+
+    system("cls");
+    demoStringsAndThis();
 
     std::cout << "\nPress any key to start.\n";
     _getch();

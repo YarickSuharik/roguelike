@@ -62,6 +62,32 @@ namespace rl {
         return m_loot ? *m_loot : std::string();
     }
 
+    std::string Skeleton::getFirstLoot() const {
+        if (!m_loot) {
+            return std::string();
+        }
+
+        std::string::size_type separator = m_loot->find(' ');
+
+        if (separator == std::string::npos) {
+            return *m_loot;
+        }
+
+        return m_loot->substr(0, separator);
+    }
+
+    bool Skeleton::hasLoot(const std::string& item) const {
+        if (!m_loot) {
+            return false;
+        }
+
+        return m_loot->find(item) != std::string::npos;
+    }
+
+    bool Skeleton::lootEquals(const std::string& expected) const {
+        return getLoot() == expected;
+    }
+
     void Skeleton::addLoot(const std::string& item) {
         if (!m_loot) {
             m_loot = std::make_shared<std::string>();
@@ -72,6 +98,18 @@ namespace rl {
         }
 
         *m_loot += item;
+    }
+
+    void Skeleton::takeLootFrom(const Skeleton& source) {
+        if (this == &source) {
+            return;
+        }
+
+        addLoot(source.getLoot());
+    }
+
+    void Skeleton::shareLootWith(Skeleton& other) const {
+        other.takeLootFrom(*this);
     }
 
     // поверхностная копия делит m_loot с оригиналом, поэтому клону строку отсоединяем
