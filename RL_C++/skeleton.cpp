@@ -6,6 +6,8 @@
 
 namespace rl {
 
+    int Skeleton::s_createdCount = 0;
+
     Skeleton::Skeleton()
         : Skeleton("Skeleton", Position(0, 0), std::weak_ptr<World>(), "S") {
         std::cout << "[Skeleton] Default constructor\n";
@@ -17,16 +19,19 @@ namespace rl {
     Skeleton::Skeleton(std::string name, Position startPos, const std::weak_ptr<World>& worldContext, std::string symbol, std::string loot)
         : Character(std::move(name), startPos, worldContext, std::move(symbol)),
           m_loot(std::make_shared<std::string>(std::move(loot))) {
+        m_inventoryNumber = ++s_createdCount;
         std::cout << "[Skeleton] Constructor: " << getActorName() << "\n";
     }
 
     Skeleton::Skeleton(const Skeleton& other)
         : Character(other), m_loot(other.m_loot) {
+        m_inventoryNumber = ++s_createdCount;
         std::cout << "[Skeleton] Copy constructor: " << getActorName() << "\n";
     }
 
     Skeleton::Skeleton(Skeleton&& other) noexcept
         : Character(std::move(other)), m_loot(std::move(other.m_loot)) {
+        m_inventoryNumber = ++s_createdCount;
         std::cout << "[Skeleton] Move constructor: " << getActorName() << "\n";
     }
 
@@ -56,6 +61,14 @@ namespace rl {
 
     void Skeleton::onSpawned() {
         setController(std::make_unique<AIController>());
+    }
+
+    int Skeleton::getCreatedCount() {
+        return s_createdCount;
+    }
+
+    int Skeleton::getInventoryNumber() const {
+        return m_inventoryNumber;
     }
 
     std::string Skeleton::getLoot() const {

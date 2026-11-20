@@ -7,7 +7,10 @@ namespace rl {
 
     class Skeleton : public Character {
     private:
+        static int s_createdCount;
+
         std::shared_ptr<std::string> m_loot;
+        int m_inventoryNumber;
 
     public:
         Skeleton();
@@ -20,6 +23,9 @@ namespace rl {
         virtual ~Skeleton();
 
         virtual void onSpawned() override;
+
+        static int getCreatedCount();
+        int getInventoryNumber() const;
 
         std::string getLoot() const;
         std::string getFirstLoot() const;

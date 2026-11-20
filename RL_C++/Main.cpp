@@ -1,5 +1,6 @@
 ﻿#include <Windows.h>
 #include <conio.h>
+#include <array>
 #include <cstdlib>
 #include <memory>
 #include <iostream>
@@ -10,6 +11,7 @@
 #include "player_character.hpp"
 #include "base_controller.hpp"
 #include "ai_controller.hpp"
+#include "player_controller.hpp"
 #include "skeleton.hpp"
 #include "camera.hpp"
 #include "position.hpp"
@@ -135,6 +137,36 @@ namespace {
         }
     }
 
+    void demoStaticMembers() {
+        std::cout << "\n=== static members ===\n";
+        std::cout << "created before: " << rl::Skeleton::getCreatedCount() << "\n";
+
+        {
+            rl::Skeleton first("First", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S", "gold");
+            rl::Skeleton second("Second", rl::Position(0, 0), std::weak_ptr<rl::World>(), "S");
+
+            std::cout << "first inventory number: " << first.getInventoryNumber() << "\n";
+            std::cout << "second inventory number: " << second.getInventoryNumber() << "\n";
+            std::cout << "created now: " << rl::Skeleton::getCreatedCount() << "\n";
+        }
+    }
+
+    void demoBasePointerArray() {
+        std::cout << "\n=== array of unique_ptr<BaseController> ===\n";
+
+        std::array<std::unique_ptr<rl::BaseController>, 2> controllers = {
+            std::make_unique<rl::PlayerController>(),
+            std::make_unique<rl::AIController>()
+        };
+
+        for (const auto& controller : controllers) {
+            std::cout << controller->describe() << "\n";
+        }
+
+        std::unique_ptr<rl::BaseController> clone = controllers[1]->clone();
+        std::cout << "clone: " << clone->describe() << "\n";
+    }
+
 }
 
 int main() {
@@ -168,6 +200,18 @@ int main() {
 
     system("cls");
     demoStringsAndThis();
+
+    std::cout << "\nPress any key to see static members.\n";
+    _getch();
+
+    system("cls");
+    demoStaticMembers();
+
+    std::cout << "\nPress any key to see the controller array.\n";
+    _getch();
+
+    system("cls");
+    demoBasePointerArray();
 
     std::cout << "\nPress any key to start.\n";
     _getch();
