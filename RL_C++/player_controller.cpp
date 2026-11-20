@@ -1,4 +1,4 @@
-#include "player_controller.hpp"
+﻿#include "player_controller.hpp"
 #include "character.hpp"
 #include "position.hpp"
 #include <conio.h>
@@ -10,7 +10,9 @@ namespace rl {
     PlayerController::~PlayerController() {}
 
     void PlayerController::update() {
-        if (m_possessedCharacter == nullptr) return;
+        auto character = m_possessedCharacter.lock();
+
+        if (!character) return;
 
         int key = _getch();
 
@@ -31,7 +33,7 @@ namespace rl {
         }
 
         if (wantsToMove) {
-            m_possessedCharacter->moveRelative(dx, dy);
+            character->moveRelative(dx, dy);
         }
     }
 
